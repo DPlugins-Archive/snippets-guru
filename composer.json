@@ -1,0 +1,17 @@
+{
+    "name": "dplugins/snippets-guru",
+    "description": "The cloud features for Code Snippets and Script Organizer plugin",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Dplugins\\SnippetsGuru\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "dplugins",
+            "email": "mail@snippets.guru"
+        }
+    ],
+    "minimum-stability": "dev"
+}
