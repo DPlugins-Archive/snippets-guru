@@ -2,6 +2,8 @@
     "name": "dplugins/snippets-guru",
     "description": "The cloud features for Code Snippets and Script Organizer plugin",
     "type": "library",
+    "license": "MIT",
+    "homepage": "https://github.com/dplugins/snippets-guru",
     "autoload": {
         "psr-4": {
             "Dplugins\\SnippetsGuru\\": "src/"
