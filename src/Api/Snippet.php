@@ -94,8 +94,10 @@ class Snippet extends Api
     public function save($data){
         $url = $this->getBaseUrl() . self::$base_path;
 
+        $args['body'] = json_encode($data);
+
         try {
-            $data = $this->remote_request('POST', $url, $data);
+            $data = $this->remote_request('POST', $url, $args);
         } catch (\Throwable $th) {
             throw $th;
         }
@@ -116,8 +118,10 @@ class Snippet extends Api
     public function update($id, $data){
         $url = $this->getBaseUrl() . self::$base_path . '/' . $id;
 
+        $args['body'] = json_encode($data);
+
         try {
-            $data = $this->remote_request('PUT', $url, $data);
+            $data = $this->remote_request('PUT', $url, $args);
         } catch (\Throwable $th) {
             throw $th;
         }

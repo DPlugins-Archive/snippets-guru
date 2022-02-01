@@ -83,8 +83,10 @@ class Blob extends Api
 
         $data['snippet'] = $this->getSnippetIRI();
 
+        $args['body'] = json_encode($data);
+
         try {
-            $data = $this->remote_request('POST', $url, $data);
+            $data = $this->remote_request('POST', $url, $args);
         } catch (\Throwable $th) {
             throw $th;
         }
@@ -107,8 +109,10 @@ class Blob extends Api
 
         $data['snippet'] = $this->getSnippetIRI();
 
+        $args['body'] = json_encode($data);
+
         try {
-            $data = $this->remote_request('PUT', $url, $data);
+            $data = $this->remote_request('PUT', $url, $args);
         } catch (\Throwable $th) {
             throw $th;
         }

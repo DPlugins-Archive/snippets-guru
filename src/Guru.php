@@ -32,6 +32,8 @@ class Guru
      */
     protected $base_url = 'https://snippets.guru';
 
+    protected $option_name_auth_token = 'snippets_guru_auth_token';
+
     /**
      * Main Guru Instance.
      *
@@ -78,6 +80,14 @@ class Guru
     }
 
     /**
+     * Set the option name for the auth token.
+     */
+    public function setOptionNameAuthToken($name)
+    {
+        $this->option_name_auth_token = $name;
+    }
+
+    /**
      * Generate JWT Auth Token.
      * 
      * Get JWT Auth Token from Snippets Guru to use in future API calls.
@@ -101,7 +111,8 @@ class Guru
             'method' => 'POST',
             'timeout' => 30,
             'headers' => [
-                'Content-Type' => 'application/json'
+                'Content-Type' => 'application/json',
+                'accept' => 'application/json',
             ],
             'body' => json_encode($body),
         ]);
@@ -119,7 +130,7 @@ class Guru
 
         $token = $data['token'];
 
-        update_option('snippets_guru_auth_token', $token);
+        update_option($this->option_name_auth_token, $token);
 
         return true;
     }
@@ -133,6 +144,6 @@ class Guru
      */
     public function retrieveAuthToken()
     {
-        return get_option('snippets_guru_auth_token');
+        return get_option($this->option_name_auth_token);
     }
 }
