@@ -33,9 +33,9 @@ class Guru
     protected $base_url = 'https://snippets.guru';
 
     /**
-     * Main Snippets Guru Instance.
+     * Main Guru Instance.
      *
-     * Ensures only one instance of Snippets Guru is loaded or can be loaded.
+     * Ensures only one instance of Guru is loaded or can be loaded.
      *
      * @return Guru Main instance.
      */
