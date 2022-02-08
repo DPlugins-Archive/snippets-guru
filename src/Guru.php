@@ -19,13 +19,6 @@ use Exception;
 class Guru
 {
     /**
-     * The single instance of the class.
-     *
-     * @var Guru
-     */
-    protected static $_instance = null;
-
-    /**
      * The base URL of the API service.
      * 
      * @var string
@@ -39,14 +32,17 @@ class Guru
      *
      * Ensures only one instance of Guru is loaded or can be loaded.
      *
-     * @return Guru Main instance.
+     * @return Guru
      */
     public static function instance()
     {
-        if (is_null(self::$_instance)) {
-            self::$_instance = new self();
+        static $instance = false;
+
+        if (!$instance) {
+            $instance = new Guru();
         }
-        return self::$_instance;
+
+        return $instance;
     }
 
     /**
