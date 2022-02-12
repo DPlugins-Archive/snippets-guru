@@ -7,10 +7,31 @@ use Exception;
 
 class Snippet extends Api
 {
+    private static $instances = [];
+
     /**
      * @inheritdoc
      */
     public static $base_path = '/api/snippets';
+
+	public static function getInstance(): self
+	{
+		$cls = static::class;
+		if (!isset(self::$instances[$cls])) {
+			self::$instances[$cls] = new static();
+		}
+
+		return self::$instances[$cls];
+	}
+
+    /**
+     * The IRI of the Snippet resource.
+     * 
+     * @return string
+     */
+    public function getSnippetIRI($id) {
+        return Snippet::$base_path . '/' . $id;
+    }
 
     /**
      * Retrieves the collection of Snippet resources.
@@ -74,12 +95,12 @@ class Snippet extends Api
         $url = $this->getBaseUrl() . self::$base_path . '/' . $id;
 
         try {
-            $data = $this->remote_request('GET', $url);
+            $resp = $this->remote_request('GET', $url);
         } catch (\Throwable $th) {
             throw $th;
         }
 
-        return $data;
+        return $resp;
     }
 
     /**
@@ -97,12 +118,12 @@ class Snippet extends Api
         $args['body'] = json_encode($data);
 
         try {
-            $data = $this->remote_request('POST', $url, $args);
+            $resp = $this->remote_request('POST', $url, $args);
         } catch (\Throwable $th) {
             throw $th;
         }
 
-        return $data;
+        return $resp;
     }
 
     /**
@@ -119,14 +140,20 @@ class Snippet extends Api
         $url = $this->getBaseUrl() . self::$base_path . '/' . $id;
 
         $args['body'] = json_encode($data);
+        
+        $args['headers'] = [
+            'Content-Type' => 'application/ld+json',
+            'accept' => 'application/json',
+            'Authorization' => 'Bearer ' . $this->retrieveAuthToken()
+        ];
 
         try {
-            $data = $this->remote_request('PUT', $url, $args);
+            $resp = $this->remote_request('PUT', $url, $args);
         } catch (\Throwable $th) {
             throw $th;
         }
 
-        return $data;
+        return $resp;
     }
 
     /**

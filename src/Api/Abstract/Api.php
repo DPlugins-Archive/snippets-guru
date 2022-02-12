@@ -74,7 +74,7 @@ abstract class Api
             'headers' => [
                 'Content-Type' => 'application/json',
                 'accept' => 'application/json',
-                'Authorization' => $jwt_token
+                'Authorization' => 'Bearer ' . $jwt_token
             ],
         ];
 
@@ -87,7 +87,7 @@ abstract class Api
         }
 
         $code = wp_remote_retrieve_response_code($response);
-        
+
         if ($code >= 400) {
             throw new Exception(wp_remote_retrieve_response_message($response, $code));
         }
@@ -100,10 +100,12 @@ abstract class Api
             }
         }
 
-        $data = json_decode(wp_remote_retrieve_body($response), true);
+        $body = wp_remote_retrieve_body($response);
+
+        $data = json_decode($body);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new Exception('json_decode error: ' . json_last_error_msg());
+            throw new Exception(sprintf('json_decode error: [%s] %s', json_last_error(), json_last_error_msg()));
         }
 
         return $data;

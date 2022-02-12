@@ -7,6 +7,8 @@ use Exception;
 
 class Blob extends Api
 {
+    private static $instances = [];
+
     /**
      * @inheritdoc
      */
@@ -19,13 +21,35 @@ class Blob extends Api
      */
     protected $snippet_id;
 
+	public static function getInstance(): self
+	{
+		$cls = static::class;
+		if (!isset(self::$instances[$cls])) {
+			self::$instances[$cls] = new static();
+		}
+
+		return self::$instances[$cls];
+	}
+
+    /**
+     * The IRI of the Blob resource.
+     * 
+     * @return string
+     */
+    public function getBlobIRI($id) {
+        return Blob::$base_path . '/' . $id;
+    }
+
     /**
      * Set the Snippet resource id (uuid)
      * 
      * @param string $snippet_id The Snippet resource id (uuid)
+     * @return Blob
      */
     public function setSnippetId($snippet_id) {
         $this->snippet_id = $snippet_id;
+
+        return $this;
     }
 
     /**
@@ -35,15 +59,6 @@ class Blob extends Api
      */
     public function getSnippetId() {
         return $this->snippet_id;
-    }
-
-    /**
-     * The IRI of the Snippet resource to which the Blob belongs.
-     * 
-     * @return string
-     */
-    private function getSnippetIRI() {
-        return Snippet::$base_path . '/' . $this->snippet_id;
     }
 
     /**
@@ -81,7 +96,7 @@ class Blob extends Api
     public function save($data){
         $url = $this->getBaseUrl() . self::$base_path;
 
-        $data['snippet'] = $this->getSnippetIRI();
+        $data['snippet'] = Snippet::getInstance()->getSnippetIRI($this->getSnippetId());
 
         $args['body'] = json_encode($data);
 
@@ -107,7 +122,7 @@ class Blob extends Api
     public function update($id, $data){
         $url = $this->getBaseUrl() . self::$base_path . '/' . $id;
 
-        $data['snippet'] = $this->getSnippetIRI();
+        $data['snippet'] = Snippet::getInstance()->getSnippetIRI($this->getSnippetId());
 
         $args['body'] = json_encode($data);
 

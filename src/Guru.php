@@ -2,6 +2,7 @@
 
 namespace Dplugins\SnippetsGuru;
 
+use Dplugins\SnippetsGuru\Integration\CodeSnippets;
 use Exception;
 
 /**
@@ -52,6 +53,18 @@ class Guru
     {
         if (defined('SNIPPETS_GURU_BASE_URL')) {
             $this->base_url = SNIPPETS_GURU_BASE_URL;
+        }
+    }
+
+    /**
+     * Load the plugin integration.
+     * 
+     * @return void
+     */
+    public function integrate()
+    {
+        if (defined('CODE_SNIPPETS_FILE')) {
+            $code_snippets = new CodeSnippets();
         }
     }
 
@@ -140,6 +153,6 @@ class Guru
      */
     public function retrieveAuthToken()
     {
-        return get_option($this->option_name_auth_token);
+        return apply_filters('snippets_guru/retrieve_auth_token', get_option($this->option_name_auth_token));
     }
 }
