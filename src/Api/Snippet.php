@@ -14,22 +14,23 @@ class Snippet extends Api
      */
     public static $base_path = '/api/snippets';
 
-	public static function getInstance(): self
-	{
-		$cls = static::class;
-		if (!isset(self::$instances[$cls])) {
-			self::$instances[$cls] = new static();
-		}
+    public static function getInstance(): self
+    {
+        $cls = static::class;
+        if (!isset(self::$instances[$cls])) {
+            self::$instances[$cls] = new static();
+        }
 
-		return self::$instances[$cls];
-	}
+        return self::$instances[$cls];
+    }
 
     /**
      * The IRI of the Snippet resource.
      * 
      * @return string
      */
-    public function getSnippetIRI($id) {
+    public function getSnippetIRI($id)
+    {
         return Snippet::$base_path . '/' . $id;
     }
 
@@ -44,36 +45,12 @@ class Snippet extends Api
      */
     public function list($query = [])
     {
-        if (!empty($query)) {
-            if ($query['page']) {
-                $args['body']['page'] = $query['page'];
-            }
-
-            if ($query['namespace']) {
-                $args['body']['namespace'] = $query['namespace'];
-            }
-
-            if ($query['name']) {
-                $args['body']['name'] = $query['name'];
-            }
-
-            if ($query['description']) {
-                $args['body']['description'] = $query['description'];
-            }
-
-            if ($query['isPublic']) {
-                $args['body']['isPublic'] = $query['isPublic'];
-            }
-        }
-
-        if (isset($args['body']) && !empty($args['body'])) {
-            $args['body'] = json_encode($args['body']);
-        }
+        $args['body'] = $query;
 
         $url = $this->getBaseUrl() . self::$base_path;
 
         try {
-            $data = $this->remote_request('POST', $url, $args);
+            $data = $this->remote_request('GET', $url, $args);
         } catch (\Throwable $th) {
             throw $th;
         }
@@ -112,7 +89,8 @@ class Snippet extends Api
      * 
      * @link https://snippets.guru/api/docs?ui=re_doc#operation/postSnippetCollection
      */
-    public function save($data){
+    public function save($data)
+    {
         $url = $this->getBaseUrl() . self::$base_path;
 
         $args['body'] = json_encode($data);
@@ -136,16 +114,11 @@ class Snippet extends Api
      * 
      * @link https://snippets.guru/api/docs?ui=re_doc#operation/putSnippetItem
      */
-    public function update($id, $data){
+    public function update($id, $data)
+    {
         $url = $this->getBaseUrl() . self::$base_path . '/' . $id;
 
         $args['body'] = json_encode($data);
-        
-        $args['headers'] = [
-            'Content-Type' => 'application/ld+json',
-            'accept' => 'application/json',
-            'Authorization' => 'Bearer ' . $this->retrieveAuthToken()
-        ];
 
         try {
             $resp = $this->remote_request('PUT', $url, $args);
@@ -165,7 +138,8 @@ class Snippet extends Api
      * 
      * @link https://snippets.guru/api/docs?ui=re_doc#operation/deleteSnippetItem
      */
-    public function delete($id){
+    public function delete($id)
+    {
         $url = $this->getBaseUrl() . self::$base_path . '/' . $id;
 
         try {

@@ -72,13 +72,13 @@ abstract class Api
             'method' => $method,
             'timeout' => 30,
             'headers' => [
-                'Content-Type' => 'application/json',
-                'accept' => 'application/json',
+                'Content-Type' => 'application/ld+json',
+                'accept' => 'application/ld+json',
                 'Authorization' => 'Bearer ' . $jwt_token
             ],
         ];
 
-        $parsed_args = wp_parse_args($args, $defaults);
+        $parsed_args = array_merge( $defaults, $args );
 
         $response = wp_remote_request($url, $parsed_args);
 

@@ -2,7 +2,7 @@
 
 namespace Dplugins\SnippetsGuru;
 
-use Dplugins\SnippetsGuru\Integration\CodeSnippets;
+use Dplugins\SnippetsGuru\Integration\CodeSnippets\Plugin as CodeSnippets;
 use Exception;
 
 /**
@@ -25,8 +25,6 @@ class Guru
      * @var string
      */
     protected $base_url = 'https://snippets.guru';
-
-    protected $option_name_auth_token = 'snippets_guru_auth_token';
 
     /**
      * Main Guru Instance.
@@ -63,7 +61,9 @@ class Guru
      */
     public function integrate()
     {
-        if (defined('CODE_SNIPPETS_FILE')) {
+        static $code_snippets = false;
+
+        if (defined('CODE_SNIPPETS_FILE') && !$code_snippets) {
             $code_snippets = new CodeSnippets();
         }
     }
@@ -89,62 +89,6 @@ class Guru
     }
 
     /**
-     * Set the option name for the auth token.
-     */
-    public function setOptionNameAuthToken($name)
-    {
-        $this->option_name_auth_token = $name;
-    }
-
-    /**
-     * Generate JWT Auth Token.
-     * 
-     * Get JWT Auth Token from Snippets Guru to use in future API calls.
-     * The token will be saved in the options table with the key 'snippets_guru_auth_token'.
-     * The token ttl is 2 years.
-     * 
-     * @param string $email the email address of the user on snippets.guru site.
-     * @param string $password the password of the user on snippets.guru site.
-     * @return bool|Exception true if the token is generated, otherwise Exception
-     */
-    public function generateAuthToken($email, $password)
-    {
-        $url = $this->base_url . '/api/login_check';
-
-        $body = [
-            'email' => $email,
-            'password' => $password
-        ];
-
-        $response = wp_remote_request($url, [
-            'method' => 'POST',
-            'timeout' => 30,
-            'headers' => [
-                'Content-Type' => 'application/json',
-                'accept' => 'application/json',
-            ],
-            'body' => json_encode($body),
-        ]);
-
-        if (is_wp_error($response)) {
-            throw new Exception($response->get_error_message());
-        }
-
-        $data = json_decode(wp_remote_retrieve_body($response), true);
-        $code = wp_remote_retrieve_response_code($response);
-
-        if ($code !== 200) {
-            throw new Exception('http_status_code', $code);
-        }
-
-        $token = $data['token'];
-
-        update_option($this->option_name_auth_token, $token);
-
-        return true;
-    }
-
-    /**
      * Get JWT Auth Token.
      * 
      * Get the JWT Auth Token from the options table.
@@ -153,6 +97,12 @@ class Guru
      */
     public function retrieveAuthToken()
     {
-        return apply_filters('snippets_guru/retrieve_auth_token', get_option($this->option_name_auth_token));
+        $auth_token = get_option('snippets_guru_auth_token');
+
+        if (defined('SNIPPETS_GURU_AUTH_TOKEN')) {
+            $auth_token = SNIPPETS_GURU_AUTH_TOKEN;
+        }
+
+        return apply_filters('snippets_guru/retrieve_auth_token', $auth_token);
     }
 }
