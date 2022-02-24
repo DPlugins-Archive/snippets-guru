@@ -65,7 +65,6 @@ class ListTable
                 ))
             );
 
-            // if (!$snippet->cloud_public || $snippet->cloud_owned) {
             if (
                 (!array_key_exists('is_public', $snippet->cloud_config) || !$snippet->cloud_config['is_public'])
                 || (array_key_exists('owned', $snippet->cloud_config) && $snippet->cloud_config['owned'])
@@ -92,12 +91,12 @@ class ListTable
     {
         if (!(isset($_GET['type']) && 'cloud' === $_GET['type'])) {
             return $snippet->cloud_uuid
-			? $html . sprintf(
-                '<span class="badge"><span class="dashicons dashicons-cloud" title="%s"></span> %s </span>', 
-                esc_attr(__('Cloud Storage', 'code-snippets')),
-                esc_html__('Cloud', 'code-snippets')
+                ? $html . sprintf(
+                    '<span class="badge"><span class="dashicons dashicons-cloud" title="%s"></span> %s </span>',
+                    esc_attr(__('Cloud Storage', 'code-snippets')),
+                    esc_html__('Cloud', 'code-snippets')
                 )
-            : $html;
+                : $html;
         }
 
         $out = sprintf(
@@ -137,32 +136,43 @@ class ListTable
      */
     public function get_action_link($action, $snippet)
     {
-        // redirect actions to the network dashboard for shared network snippets
-        $local_actions = array('activate', 'activate-shared', 'run-once', 'run-once-shared');
-        $network_redirect = $snippet->shared_network && !$this->is_network && !in_array($action, $local_actions, true);
+        $network_redirect = $snippet->shared_network && !$this->is_network;
 
         // edit links go to a different menu
         if ('edit' === $action) {
             return code_snippets()->get_snippet_edit_url($snippet->id, $network_redirect ? 'network' : 'self');
         }
 
+        $uuid = explode(':', $snippet->cloud_uuid)[0];
+
+        $query_args = ['cloud_uuid' => $uuid];
+
         if ('preview' === $action) {
             return add_query_arg(
-                [
-                    'cloud_uuid' => explode(':', $snippet->cloud_uuid)[0],
-                    'preview' => true,
-                ],
+                array_merge(
+                    $query_args,
+                    [
+                        'preview' => true,
+                    ]
+                ),
                 code_snippets()->get_snippet_edit_url($snippet->id, $network_redirect ? 'network' : 'self')
             );
         }
 
-        $query_args = array('action' => $action, 'cloud_uuid' => $snippet->cloud_uuid);
+        if ('do_import' === $action) {
+            array_push($query_args, ['action' => 'import']);
+        } elseif ('do_import_and_link' === $action) {
+            array_push($query_args, [
+                'action' => 'import',
+                'link'   => true,
+            ]);
+        }
 
         $url = $network_redirect ?
             add_query_arg($query_args, code_snippets()->get_menu_url('manage', 'network')) :
             add_query_arg($query_args);
 
         // add a nonce to the URL for security purposes
-        return wp_nonce_url($url, 'code_snippets_manage_snippet_' . $snippet->id);
+        return wp_nonce_url($url, 'code_snippets_manage_snippet_' . $uuid);
     }
 }

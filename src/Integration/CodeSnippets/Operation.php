@@ -7,7 +7,6 @@ use Dplugins\SnippetsGuru\Api\Blob as ApiBlob;
 use Dplugins\SnippetsGuru\Api\Snippet as ApiSnippet;
 use wpdb;
 
-use function Code_Snippets\code_snippets;
 use function Code_Snippets\get_snippet;
 use function Code_Snippets\Settings\get_setting;
 use function Code_Snippets\snippets_guru;
@@ -38,7 +37,7 @@ class Operation
         if (
             !$user
             || !$user->billing->isActive
-            || !(array_key_exists('push_change', $snippet->cloud_config) || !$snippet->cloud_config['push_change'])
+            || (!array_key_exists('push_change', $snippet->cloud_config) || !$snippet->cloud_config['push_change'])
         ) {
             return;
         }

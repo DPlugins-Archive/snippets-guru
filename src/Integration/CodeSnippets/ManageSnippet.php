@@ -29,6 +29,8 @@ class ManageSnippet
         add_filter('code_snippets/admin/description_editor_settings', [$this, 'description_editor_settings'], 50);
         add_filter('code_snippets/admin/load_snippet_data', [$this, 'load_snippet_data'], 50);
         add_filter('code_snippets/extra_save_buttons', [$this, 'extra_save_buttons'], 50);
+
+        add_action('code_snippets_process_cloud_action', [$this, 'process_cloud_action'], 50);
     }
 
     /**
@@ -72,11 +74,11 @@ class ManageSnippet
         if (isset($_REQUEST['preview']) && isset($_REQUEST['cloud_uuid'])) {
             $cloud_uuid = $_REQUEST['cloud_uuid'];
 
-            $resp = wp_cache_get("cloud_item_{$cloud_uuid}", 'code_snippets');
+            $resp = wp_cache_get("cloud_snippet_{$cloud_uuid}", 'code_snippets');
 
             if (!$resp) {
                 $resp = ApiSnippet::getInstance()->get($cloud_uuid);
-                wp_cache_set("cloud_item_{$cloud_uuid}", $resp, 'code_snippets', 30);
+                wp_cache_set("cloud_snippet_{$cloud_uuid}", $resp, 'code_snippets', 30);
             }
 
             $snippet = new Snippet([
@@ -103,6 +105,89 @@ class ManageSnippet
         return $snippet;
     }
 
+    public function process_cloud_action()
+    {
+        /* If so, then perform the requested action and inform the user of the result */
+        $result = $this->perform_action($_GET['cloud_uuid'], sanitize_key($_GET['action']));
+
+        if ($result) {
+            wp_redirect(esc_url_raw(add_query_arg('result', $result)));
+            exit;
+        }
+    }
+
+    /**
+     * Perform an action on a single snippet.
+     *
+     * @param int    $id     Snippet resource uuid.
+     * @param string $action Action to perform.
+     *
+     * @return bool|string Result of performing action
+     */
+    private function perform_action($id, $action)
+    {
+        switch ($action) {
+            case 'import':
+                $imported = $this->do_import($id, isset($_GET['link']));
+                return $imported ? 'imported' : false;
+            default:
+                break;
+        }
+
+        return false;
+    }
+
+    private function do_import($id, $link = false)
+    {
+        try {
+            $resp_snippet = wp_cache_get("cloud_snippet_{$id}", 'code_snippets');
+
+            if (!$resp_snippet) {
+                $resp_snippet = ApiSnippet::getInstance()->get($id);
+                wp_cache_set("cloud_snippet_{$id}", $resp_snippet, 'code_snippets', 30);
+            }
+
+            $resp_blobs = wp_cache_get("cloud_blobs_{$id}", 'code_snippets');
+
+            if (!$resp_blobs) {
+                $resp_blobs = ApiSnippet::getInstance()->blobs($id);
+                wp_cache_set("cloud_blobs_{$id}", $resp_blobs, 'code_snippets', 30);
+            }
+
+            $blob = $resp_blobs->{'hydra:member'}[0];
+
+            $snippet = new Snippet([
+                'id'             => null,
+                'name'           => $resp_snippet->name,
+                'desc'           => $resp_snippet->description,
+                'code'           => $blob->content,
+                'tags'           => $resp_snippet->meta->tags,
+                'scope'          => $resp_snippet->meta->scope,
+                'active'         => false,
+                'priority'       => $resp_snippet->meta->priority,
+                'network'        => null,
+                'shared_network' => null,
+                'modified'       => null,
+                'cloud_config'   => [
+                    'push_change' => false,
+                    'is_public' => $resp_snippet->isPublic,
+                    'owned' => property_exists($resp_snippet, 'person'),
+                ],
+            ]);
+
+            if ($link) {
+                $snippet->cloud_uuid = sprintf('%s:%s', $resp_snippet->uuid, $blob->uuid);
+            }
+
+            save_snippet($snippet);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return false;
+        }
+
+        return true;
+    }
+
     public function codemirror_atts($atts)
     {
         if (isset($_REQUEST['preview']) && isset($_REQUEST['cloud_uuid'])) {
@@ -118,7 +203,7 @@ class ManageSnippet
             $settings['tinymce'] = false;
             $settings['quicktags'] = false;
         }
-        
+
         return $settings;
     }
 
