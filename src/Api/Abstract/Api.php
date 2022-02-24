@@ -89,7 +89,7 @@ abstract class Api
         $code = wp_remote_retrieve_response_code($response);
 
         if ($code >= 400) {
-            throw new Exception(wp_remote_retrieve_response_message($response, $code));
+            throw new Exception(wp_remote_retrieve_response_message($response), $code);
         }
 
         if ($validate_callback !== null && is_callable($validate_callback)) {

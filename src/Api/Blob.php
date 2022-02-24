@@ -15,21 +15,30 @@ class Blob extends Api
     public static $base_path = '/api/blobs';
 
     /**
+     * @var Snippet|null
+     */
+    public $snippet;
+
+    /**
      * The Snippet resource id (uuid)
      * 
-     * @var string 
+     * @var string
      */
     protected $snippet_id;
 
-	public static function getInstance(): self
+	public static function getInstance(Snippet $snippet = null): self
 	{
 		$cls = static::class;
 		if (!isset(self::$instances[$cls])) {
-			self::$instances[$cls] = new static();
+			self::$instances[$cls] = new static($snippet);
 		}
 
 		return self::$instances[$cls];
 	}
+
+    public function __construct(Snippet $snippet = null) {
+        $this->snippet = $snippet;
+    }
 
     /**
      * The IRI of the Blob resource.

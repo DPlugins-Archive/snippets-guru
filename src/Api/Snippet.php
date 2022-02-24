@@ -150,4 +150,24 @@ class Snippet extends Api
 
         return true;
     }
+
+    /**
+     * Retrieves the collection of Blob resources that belong to the Snippet Resource.
+     * 
+     * @param string $id The unique identifier of the Snippet resource (uuid).
+     * @return object the collection of Blob resources
+     * @throws Exception
+     */
+    public function blobs($id)
+    {
+        $url = $this->getBaseUrl() . self::$base_path . '/' . $id . '/blobs';
+
+        try {
+            $resp = $this->remote_request('GET', $url);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+
+        return $resp;
+    }
 }

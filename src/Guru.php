@@ -97,12 +97,61 @@ class Guru
      */
     public function retrieveAuthToken()
     {
-        $auth_token = get_option('snippets_guru_auth_token');
-
         if (defined('SNIPPETS_GURU_AUTH_TOKEN')) {
             $auth_token = SNIPPETS_GURU_AUTH_TOKEN;
+        } else {
+            $auth_token = get_option('snippets_guru_auth_token');
         }
 
         return apply_filters('snippets_guru/retrieve_auth_token', $auth_token);
+    }
+
+    public function getUser($auth_token = null, $force = false)
+    {
+        if (!$auth_token && ($auth_token = $this->retrieveAuthToken()) === false) {
+            return false;
+        }
+
+        if (!$force) {
+            $user = get_transient('code_snippets_cloud_user');
+
+            if ($user) {
+                return $user;
+            }
+        }
+        
+        $url = $this->getBaseUrl() . '/api/account';
+
+        $response = wp_remote_get($url, [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $auth_token,
+                'Content-Type' => 'application/json',
+                'accept' => 'application/json',
+            ],
+        ]);
+
+        if (is_wp_error($response)) {
+            throw new Exception($response->get_error_message(), $response->get_error_code());
+        }
+
+        $code = wp_remote_retrieve_response_code($response);
+
+        if ($code >= 400) {
+            throw new Exception(wp_remote_retrieve_response_message($response), $code);
+        }
+
+        $body = wp_remote_retrieve_body($response);
+
+        $data = json_decode($body);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new Exception(sprintf('json_decode error: [%s] %s', json_last_error(), json_last_error_msg()));
+        }
+
+        $user = $data;
+
+        set_transient('code_snippets_cloud_user', $user, DAY_IN_SECONDS);
+
+        return $data;
     }
 }

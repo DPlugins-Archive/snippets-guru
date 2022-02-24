@@ -13,6 +13,21 @@ class Revision extends Api
     public static $base_path = '/api/revisions';
 
     /**
+     * @var Snippet|null
+     */
+    public $snippet;
+
+    /**
+     * @var Blob|null
+     */
+    public $blob;
+
+    public function __construct(Blob $blob = null, Snippet $snippet = null) {
+        $this->blob = $blob;
+        $this->snippet = $snippet;
+    }
+
+    /**
      * Retrieves a Revision resource.
      * 
      * @param string $id The unique identifier of the Revision resource (uuid).
