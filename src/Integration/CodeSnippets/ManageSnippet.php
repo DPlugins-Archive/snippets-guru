@@ -30,6 +30,7 @@ class ManageSnippet
         add_filter('code_snippets/admin/load_snippet_data', [$this, 'load_snippet_data'], 50);
         add_filter('code_snippets/extra_save_buttons', [$this, 'extra_save_buttons'], 50);
 
+        add_filter('code_snippets/manage/result_messages', [$this, 'result_messages'], 50);
         add_action('code_snippets_process_cloud_action', [$this, 'process_cloud_action'], 50);
     }
 
@@ -319,7 +320,7 @@ class ManageSnippet
                     esc_html__('Please activate this feature on your plugin %s settings page %s', 'code-snippets'),
                     '<a href="' . esc_url(code_snippets()->get_menu_url('settings')) . '" target="_blank">',
                     '</a>'
-                ),
+                )
             );
         } else {
             if ($snippet->id === 0) {
@@ -347,7 +348,8 @@ class ManageSnippet
                     '<a href="' . snippets_guru()->getBaseUrl() . '" target="_blank">Snippets Guru</a>'
                 ),
                 $snippet->cloud_uuid ? sprintf(
-                    '<a style="color:rgb(156 163 175);">[UUID %s]</a>',
+                    '<a style="color:rgb(156 163 175);text-decoration: none;" href="%s" target="_blank"><span class="dashicons dashicons-external"></span> [UUID %s] </a>',
+                    snippets_guru()->getUrl(sprintf('/snippets/%s', explode(':', $snippet->cloud_uuid)[0])),
                     $snippet->cloud_uuid
                 ) : ''
             );
@@ -411,5 +413,12 @@ class ManageSnippet
                 esc_html__('Preview', 'code-snippets')
             );
         }
+    }
+
+    public function result_messages($results)
+    {
+        $results['imported'] = __('Snippet <strong>imported</strong>.', 'code-snippets');
+
+        return $results;
     }
 }

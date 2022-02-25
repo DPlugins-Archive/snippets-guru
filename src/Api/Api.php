@@ -1,6 +1,6 @@
 <?php
 
-namespace Dplugins\SnippetsGuru\Api\Abstract;
+namespace Dplugins\SnippetsGuru\Api;
 
 use Dplugins\SnippetsGuru\Guru;
 use Exception;
@@ -37,6 +37,18 @@ abstract class Api
     protected function getBaseUrl()
     {
         return $this->guru->getBaseUrl();
+    }
+
+    /**
+     * Get the URL with the given path.
+     * 
+     * @param string $path
+     * 
+     * @return string
+     */
+    public function getUrl($path = '')
+    {
+        return $this->getBaseUrl() . $path;
     }
 
     /**
@@ -78,7 +90,7 @@ abstract class Api
             ],
         ];
 
-        $parsed_args = array_merge( $defaults, $args );
+        $parsed_args = array_merge($defaults, $args);
 
         $response = wp_remote_request($url, $parsed_args);
 

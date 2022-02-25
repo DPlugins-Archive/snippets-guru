@@ -103,7 +103,7 @@ class Setting
         /* translators: %s: Hyperlink of Snippets Guru auth token retrieval page */
         $desc = esc_html__('Get the authorization token from the %s site.', 'code-snippets');
 
-        $auth_link = sprintf('<a href="%s" target="_blank">Snippets Guru</a>', snippets_guru()->getBaseUrl() . '/auth/auth_token');
+        $auth_link = sprintf('<a href="%s" target="_blank">Snippets Guru</a>', snippets_guru()->getUrl('/auth/auth_token'));
 
         printf(
             '<p class="description">%s</p>',

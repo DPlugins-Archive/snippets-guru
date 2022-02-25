@@ -2,7 +2,7 @@
 
 namespace Dplugins\SnippetsGuru\Api;
 
-use Dplugins\SnippetsGuru\Api\Abstract\Api;
+use Dplugins\SnippetsGuru\Api\Api;
 use Exception;
 
 class Revision extends Api
@@ -22,7 +22,8 @@ class Revision extends Api
      */
     public $blob;
 
-    public function __construct(Blob $blob = null, Snippet $snippet = null) {
+    public function __construct(Blob $blob = null, Snippet $snippet = null)
+    {
         $this->blob = $blob;
         $this->snippet = $snippet;
     }
@@ -38,7 +39,7 @@ class Revision extends Api
      */
     public function get($id)
     {
-        $url = $this->getBaseUrl() . self::$base_path . '/' . $id;
+        $url = $this->getUrl(self::$base_path . '/' . $id);
 
         try {
             $data = $this->remote_request('GET', $url);

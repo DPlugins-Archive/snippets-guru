@@ -5,6 +5,7 @@ namespace Dplugins\SnippetsGuru\Integration\CodeSnippets;
 use Code_Snippets\Snippet;
 
 use function Code_Snippets\code_snippets;
+use function Code_Snippets\snippets_guru;
 
 class ListTable
 {
@@ -15,6 +16,7 @@ class ListTable
         add_filter('code_snippets/list_table/columns', [$this, 'register_list_table_columns'], 50);
         add_filter('code_snippets/list_table/row_actions', [$this, 'register_list_table_row_actions'], 50, 2);
         add_filter('code_snippets/list_table/column_name', [$this, 'register_list_table_column_name'], 50, 2);
+        add_filter('code_snippets/list_table/cloned_snippet', [$this, 'register_list_table_cloned_snippet'], 50, 2);
     }
 
     public function register_list_table_bulk_actions($actions)
@@ -92,7 +94,8 @@ class ListTable
         if (!(isset($_GET['type']) && 'cloud' === $_GET['type'])) {
             return $snippet->cloud_uuid
                 ? $html . sprintf(
-                    '<span class="badge"><span class="dashicons dashicons-cloud" title="%s"></span> %s </span>',
+                    '<a href="%s" target="_blank" style="color:#50575e;text-decoration: none;"><span class="badge"><span class="dashicons dashicons-cloud" title="%s"></span> %s </span></a>',
+                    snippets_guru()->getUrl(sprintf('/snippets/%s', explode(':', $snippet->cloud_uuid)[0])),
                     esc_attr(__('Cloud Storage', 'code-snippets')),
                     esc_html__('Cloud', 'code-snippets')
                 )
@@ -116,12 +119,25 @@ class ListTable
                 );
             }
 
-            $out .= '<span class="badge" title="' . esc_html__('a local copy is available', 'code-snippets') . '"> <span class="dashicons dashicons-cloud-saved"></span> ' . esc_html__('a local copy is available', 'code-snippets') . '</span>';
+            $out .= sprintf(
+                '<span class="badge" title="%s"> <span class="dashicons dashicons-cloud-saved"></span> %s</span>',
+                esc_html__('a local copy is available', 'code-snippets'),
+                esc_html__('imported', 'code-snippets')
+            );
         }
 
         if (array_key_exists('is_public', $snippet->cloud_config) && $snippet->cloud_config['is_public']) {
-            $out .= '<span class="badge" title="' . esc_html__('public', 'code-snippets') . '"> <span class="dashicons dashicons-admin-site-alt2"></span> ' . esc_html__('public', 'code-snippets') . '</span>';
+            $out .= sprintf(
+                '<span class="badge" title="%s"> <span class="dashicons dashicons-admin-site-alt2"></span> %s</span>',
+                esc_html__('public', 'code-snippets'),
+                esc_html__('public', 'code-snippets')
+            );
         }
+
+        $out .= sprintf(
+            ' <a href="%s" target="_blank"><span class="dashicons dashicons-external"></span></a>',
+            snippets_guru()->getUrl(sprintf('/snippets/%s', explode(':', $snippet->cloud_uuid)[0]))
+        );
 
         return $out;
     }
@@ -174,5 +190,12 @@ class ListTable
 
         // add a nonce to the URL for security purposes
         return wp_nonce_url($url, 'code_snippets_manage_snippet_' . $uuid);
+    }
+
+    public function register_list_table_cloned_snippet(Snippet $snippet)
+    {
+        $snippet->cloud_uuid = '';
+
+        return $snippet;
     }
 }

@@ -79,6 +79,18 @@ class Guru
     }
 
     /**
+     * Get the URL with the given path.
+     * 
+     * @param string $path
+     * 
+     * @return string
+     */
+    public function getUrl($path = '')
+    {
+        return $this->getBaseUrl() . $path;
+    }
+
+    /**
      * Set the base URL of the API service.
      * 
      * @param string $base_url The base URL of the API service.
@@ -119,8 +131,8 @@ class Guru
                 return $user;
             }
         }
-        
-        $url = $this->getBaseUrl() . '/api/account';
+
+        $url = $this->getUrl('/api/account');
 
         $response = wp_remote_get($url, [
             'headers' => [

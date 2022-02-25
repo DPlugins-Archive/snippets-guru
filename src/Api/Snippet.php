@@ -2,7 +2,7 @@
 
 namespace Dplugins\SnippetsGuru\Api;
 
-use Dplugins\SnippetsGuru\Api\Abstract\Api;
+use Dplugins\SnippetsGuru\Api\Api;
 use Exception;
 
 class Snippet extends Api
@@ -14,7 +14,10 @@ class Snippet extends Api
      */
     public static $base_path = '/api/snippets';
 
-    public static function getInstance(): self
+    /**
+     * @return self
+     */
+    public static function getInstance()
     {
         $cls = static::class;
         if (!isset(self::$instances[$cls])) {
@@ -43,11 +46,11 @@ class Snippet extends Api
      * 
      * @link https://snippets.guru/api/docs?ui=re_doc#operation/getSnippetCollection
      */
-    public function list($query = [])
+    public function gets($query = [])
     {
         $args['body'] = $query;
 
-        $url = $this->getBaseUrl() . self::$base_path;
+        $url = $this->getUrl(self::$base_path);
 
         try {
             $data = $this->remote_request('GET', $url, $args);
@@ -69,7 +72,7 @@ class Snippet extends Api
      */
     public function get($id)
     {
-        $url = $this->getBaseUrl() . self::$base_path . '/' . $id;
+        $url = $this->getUrl(self::$base_path . '/' . $id);
 
         try {
             $resp = $this->remote_request('GET', $url);
@@ -91,7 +94,7 @@ class Snippet extends Api
      */
     public function save($data)
     {
-        $url = $this->getBaseUrl() . self::$base_path;
+        $url = $this->getUrl(self::$base_path);
 
         $args['body'] = json_encode($data);
 
@@ -116,7 +119,7 @@ class Snippet extends Api
      */
     public function update($id, $data)
     {
-        $url = $this->getBaseUrl() . self::$base_path . '/' . $id;
+        $url = $this->getUrl(self::$base_path . '/' . $id);
 
         $args['body'] = json_encode($data);
 
@@ -140,7 +143,7 @@ class Snippet extends Api
      */
     public function delete($id)
     {
-        $url = $this->getBaseUrl() . self::$base_path . '/' . $id;
+        $url = $this->getUrl(self::$base_path . '/' . $id);
 
         try {
             $this->remote_request('DELETE', $url);
@@ -160,7 +163,7 @@ class Snippet extends Api
      */
     public function blobs($id)
     {
-        $url = $this->getBaseUrl() . self::$base_path . '/' . $id . '/blobs';
+        $url = $this->getUrl(self::$base_path . '/' . $id . '/blobs');
 
         try {
             $resp = $this->remote_request('GET', $url);

@@ -2,7 +2,7 @@
 
 namespace Dplugins\SnippetsGuru\Api;
 
-use Dplugins\SnippetsGuru\Api\Abstract\Api;
+use Dplugins\SnippetsGuru\Api\Api;
 use Exception;
 
 class Blob extends Api
@@ -26,17 +26,21 @@ class Blob extends Api
      */
     protected $snippet_id;
 
-	public static function getInstance(Snippet $snippet = null): self
-	{
-		$cls = static::class;
-		if (!isset(self::$instances[$cls])) {
-			self::$instances[$cls] = new static($snippet);
-		}
+    /**
+     * @return self
+     */
+    public static function getInstance(Snippet $snippet = null)
+    {
+        $cls = static::class;
+        if (!isset(self::$instances[$cls])) {
+            self::$instances[$cls] = new static($snippet);
+        }
 
-		return self::$instances[$cls];
-	}
+        return self::$instances[$cls];
+    }
 
-    public function __construct(Snippet $snippet = null) {
+    public function __construct(Snippet $snippet = null)
+    {
         $this->snippet = $snippet;
     }
 
@@ -45,7 +49,8 @@ class Blob extends Api
      * 
      * @return string
      */
-    public function getBlobIRI($id) {
+    public function getBlobIRI($id)
+    {
         return Blob::$base_path . '/' . $id;
     }
 
@@ -55,7 +60,8 @@ class Blob extends Api
      * @param string $snippet_id The Snippet resource id (uuid)
      * @return Blob
      */
-    public function setSnippetId($snippet_id) {
+    public function setSnippetId($snippet_id)
+    {
         $this->snippet_id = $snippet_id;
 
         return $this;
@@ -66,7 +72,8 @@ class Blob extends Api
      * 
      * @return string
      */
-    public function getSnippetId() {
+    public function getSnippetId()
+    {
         return $this->snippet_id;
     }
 
@@ -81,7 +88,7 @@ class Blob extends Api
      */
     public function get($id)
     {
-        $url = $this->getBaseUrl() . self::$base_path . '/' . $id;
+        $url = $this->getUrl(self::$base_path . '/' . $id);
 
         try {
             $data = $this->remote_request('GET', $url);
@@ -102,8 +109,9 @@ class Blob extends Api
      * 
      * @link https://snippets.guru/api/docs?ui=re_doc#operation/postBlobCollection
      */
-    public function save($data){
-        $url = $this->getBaseUrl() . self::$base_path;
+    public function save($data)
+    {
+        $url = $this->getUrl(self::$base_path);
 
         $data['snippet'] = Snippet::getInstance()->getSnippetIRI($this->getSnippetId());
 
@@ -128,8 +136,9 @@ class Blob extends Api
      * 
      * @link https://snippets.guru/api/docs?ui=re_doc#operation/putBlobItem
      */
-    public function update($id, $data){
-        $url = $this->getBaseUrl() . self::$base_path . '/' . $id;
+    public function update($id, $data)
+    {
+        $url = $this->getUrl(self::$base_path . '/' . $id);
 
         $data['snippet'] = Snippet::getInstance()->getSnippetIRI($this->getSnippetId());
 
@@ -153,8 +162,9 @@ class Blob extends Api
      * 
      * @link https://snippets.guru/api/docs?ui=re_doc#operation/deleteBlobItem
      */
-    public function delete($id){
-        $url = $this->getBaseUrl() . self::$base_path . '/' . $id;
+    public function delete($id)
+    {
+        $url = $this->getUrl(self::$base_path . '/' . $id);
 
         try {
             $this->remote_request('DELETE', $url);
