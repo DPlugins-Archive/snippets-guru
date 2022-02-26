@@ -191,7 +191,7 @@ class Setting
             add_settings_error(
                 'code-snippets-settings-notices',
                 'expire-cloud-subscription',
-                sprintf($message, '<a href="' . snippets_guru()->getBaseUrl() . '" target="_blank">' . snippets_guru()->getBaseUrl() . '</a>'),
+                sprintf($message, '<a href="' . snippets_guru()->getUrl() . '" target="_blank">' . snippets_guru()->getUrl() . '</a>'),
                 'warning'
             );
         }

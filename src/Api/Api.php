@@ -8,36 +8,11 @@ use Exception;
 abstract class Api
 {
     /**
-     * The instance of the Guru class.
-     * 
-     * @var Guru
-     */
-    protected $guru;
-
-    /**
      * The endpoint of the resource.
      * 
      * @var string
      */
     public static $base_path = '/';
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->guru = Guru::instance();
-    }
-
-    /**
-     * Get the base URL of the API service.
-     * 
-     * @return string
-     */
-    protected function getBaseUrl()
-    {
-        return $this->guru->getBaseUrl();
-    }
 
     /**
      * Get the URL with the given path.
@@ -48,17 +23,7 @@ abstract class Api
      */
     public function getUrl($path = '')
     {
-        return $this->getBaseUrl() . $path;
-    }
-
-    /**
-     * Get the JWT Auth Token to use in future API calls.
-     * 
-     * @return string|bool the JWT Auth Token or false if not found
-     */
-    protected function retrieveAuthToken()
-    {
-        return $this->guru->retrieveAuthToken();
+        return Guru::instance()->getUrl($path);
     }
 
     /**
@@ -74,7 +39,7 @@ abstract class Api
      */
     public function remote_request($method, $url, $args = [], $validate_callback = null)
     {
-        $jwt_token = $this->retrieveAuthToken();
+        $jwt_token = Guru::instance()->retrieveAuthToken();
 
         if (!$jwt_token) {
             throw new Exception('No JWT Auth Token found.');

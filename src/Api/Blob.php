@@ -2,13 +2,10 @@
 
 namespace Dplugins\SnippetsGuru\Api;
 
-use Dplugins\SnippetsGuru\Api\Api;
 use Exception;
 
 class Blob extends Api
 {
-    private static $instances = [];
-
     /**
      * @inheritdoc
      */
@@ -29,14 +26,15 @@ class Blob extends Api
     /**
      * @return self
      */
-    public static function getInstance(Snippet $snippet = null)
+    public static function instance(Snippet $snippet = null)
     {
-        $cls = static::class;
-        if (!isset(self::$instances[$cls])) {
-            self::$instances[$cls] = new static($snippet);
+        static $instance = false;
+
+        if (!$instance) {
+            $instance = new static($snippet);
         }
 
-        return self::$instances[$cls];
+        return $instance;
     }
 
     public function __construct(Snippet $snippet = null)
@@ -113,7 +111,7 @@ class Blob extends Api
     {
         $url = $this->getUrl(self::$base_path);
 
-        $data['snippet'] = Snippet::getInstance()->getSnippetIRI($this->getSnippetId());
+        $data['snippet'] = Snippet::instance()->getSnippetIRI($this->getSnippetId());
 
         $args['body'] = json_encode($data);
 
@@ -140,7 +138,7 @@ class Blob extends Api
     {
         $url = $this->getUrl(self::$base_path . '/' . $id);
 
-        $data['snippet'] = Snippet::getInstance()->getSnippetIRI($this->getSnippetId());
+        $data['snippet'] = Snippet::instance()->getSnippetIRI($this->getSnippetId());
 
         $args['body'] = json_encode($data);
 

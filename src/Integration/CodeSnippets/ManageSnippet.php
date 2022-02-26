@@ -78,7 +78,7 @@ class ManageSnippet
             $resp = wp_cache_get("cloud_snippet_{$cloud_uuid}", 'code_snippets');
 
             if (!$resp) {
-                $resp = ApiSnippet::getInstance()->get($cloud_uuid);
+                $resp = ApiSnippet::instance()->get($cloud_uuid);
                 wp_cache_set("cloud_snippet_{$cloud_uuid}", $resp, 'code_snippets', 30);
             }
 
@@ -144,14 +144,14 @@ class ManageSnippet
             $resp_snippet = wp_cache_get("cloud_snippet_{$id}", 'code_snippets');
 
             if (!$resp_snippet) {
-                $resp_snippet = ApiSnippet::getInstance()->get($id);
+                $resp_snippet = ApiSnippet::instance()->get($id);
                 wp_cache_set("cloud_snippet_{$id}", $resp_snippet, 'code_snippets', 30);
             }
 
             $resp_blobs = wp_cache_get("cloud_blobs_{$id}", 'code_snippets');
 
             if (!$resp_blobs) {
-                $resp_blobs = ApiSnippet::getInstance()->blobs($id);
+                $resp_blobs = ApiSnippet::instance()->blobs($id);
                 wp_cache_set("cloud_blobs_{$id}", $resp_blobs, 'code_snippets', 30);
             }
 
@@ -345,7 +345,7 @@ class ManageSnippet
                 sprintf(
                     /* translators: %s: Hyperlink of Snippets Guru cloud */
                     esc_html__('Allow this snippet to be saved to the %s cloud', 'code-snippets'),
-                    '<a href="' . snippets_guru()->getBaseUrl() . '" target="_blank">Snippets Guru</a>'
+                    '<a href="' . snippets_guru()->getUrl() . '" target="_blank">Snippets Guru</a>'
                 ),
                 $snippet->cloud_uuid ? sprintf(
                     '<a style="color:rgb(156 163 175);text-decoration: none;" href="%s" target="_blank"><span class="dashicons dashicons-external"></span> [UUID %s] </a>',

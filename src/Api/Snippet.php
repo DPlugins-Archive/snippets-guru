@@ -2,13 +2,10 @@
 
 namespace Dplugins\SnippetsGuru\Api;
 
-use Dplugins\SnippetsGuru\Api\Api;
 use Exception;
 
 class Snippet extends Api
 {
-    private static $instances = [];
-
     /**
      * @inheritdoc
      */
@@ -17,14 +14,15 @@ class Snippet extends Api
     /**
      * @return self
      */
-    public static function getInstance()
+    public static function instance()
     {
-        $cls = static::class;
-        if (!isset(self::$instances[$cls])) {
-            self::$instances[$cls] = new static();
+        static $instance = false;
+
+        if (!$instance) {
+            $instance = new static();
         }
 
-        return self::$instances[$cls];
+        return $instance;
     }
 
     /**

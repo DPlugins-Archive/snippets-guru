@@ -89,7 +89,7 @@ class Operation
                 ],
             ];
 
-            $snippet_resp = ApiSnippet::getInstance()
+            $snippet_resp = ApiSnippet::instance()
                 ->save($snippet_args);
 
             $data = array(
@@ -106,12 +106,12 @@ class Operation
 
             $snippet_args['blobs'] = [
                 [
-                    '@id' => ApiBlob::getInstance()->getBlobIRI($blob_guid),
+                    '@id' => ApiBlob::instance()->getBlobIRI($blob_guid),
                     'content' => $snippet->code,
                 ],
             ];
 
-            $snippet_resp = ApiSnippet::getInstance()
+            $snippet_resp = ApiSnippet::instance()
                 ->update($snippet_guid, $snippet_args);
         }
 

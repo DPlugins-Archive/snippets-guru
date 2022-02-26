@@ -2,7 +2,6 @@
 
 namespace Dplugins\SnippetsGuru\Api;
 
-use Dplugins\SnippetsGuru\Api\Api;
 use Exception;
 
 class Revision extends Api
