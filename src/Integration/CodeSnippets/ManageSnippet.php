@@ -349,7 +349,7 @@ class ManageSnippet
                 ),
                 $snippet->cloud_uuid ? sprintf(
                     '<a style="color:rgb(156 163 175);text-decoration: none;" href="%s" target="_blank"><span class="dashicons dashicons-external"></span> [UUID %s] </a>',
-                    snippets_guru()->getUrl(sprintf('/snippets/%s', explode(':', $snippet->cloud_uuid)[0])),
+                    snippets_guru()->getUrl(sprintf('/app/snippets/%s', explode(':', $snippet->cloud_uuid)[0])),
                     $snippet->cloud_uuid
                 ) : ''
             );

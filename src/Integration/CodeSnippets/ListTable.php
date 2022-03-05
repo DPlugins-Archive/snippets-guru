@@ -95,7 +95,7 @@ class ListTable
             return $snippet->cloud_uuid
                 ? $html . sprintf(
                     '<a href="%s" target="_blank" style="color:#50575e;text-decoration: none;"><span class="badge"><span class="dashicons dashicons-cloud" title="%s"></span> %s </span></a>',
-                    snippets_guru()->getUrl(sprintf('/snippets/%s', explode(':', $snippet->cloud_uuid)[0])),
+                    snippets_guru()->getUrl(sprintf('/app/snippets/%s', explode(':', $snippet->cloud_uuid)[0])),
                     esc_attr(__('Cloud Storage', 'code-snippets')),
                     esc_html__('Cloud', 'code-snippets')
                 )
@@ -136,7 +136,7 @@ class ListTable
 
         $out .= sprintf(
             ' <a href="%s" target="_blank"><span class="dashicons dashicons-external"></span></a>',
-            snippets_guru()->getUrl(sprintf('/snippets/%s', explode(':', $snippet->cloud_uuid)[0]))
+            snippets_guru()->getUrl(sprintf('/app/snippets/%s', explode(':', $snippet->cloud_uuid)[0]))
         );
 
         return $out;
